@@ -4,6 +4,12 @@
   "description": "Sample Photo app using React and Typescript",
   "main": "index.js",
   "scripts": {
+    "prebuild": "run-s clean",
+    "build": "parcel build src/index.html --no-source-maps",
+    "clean": "rimraf ./dist",
+    "lint": "run-s lint:code",
+    "lint:code": "eslint --ext ts,tsx src",
+    "start": "parcel src/index.html --open",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -24,5 +30,25 @@
   "bugs": {
     "url": "https://github.com/Sutikshan/photo-app/issues"
   },
-  "homepage": "https://github.com/Sutikshan/photo-app#readme"
+  "homepage": "https://github.com/Sutikshan/photo-app#readme",
+  "devDependencies": {
+    "@types/react": "^17.0.2",
+    "@types/react-dom": "^17.0.1",
+    "@typescript-eslint/eslint-plugin": "^4.15.0",
+    "@typescript-eslint/parser": "^4.15.0",
+    "eslint": "^7.20.0",
+    "eslint-plugin-react": "^7.22.0",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "npm-run-all": "^4.1.5",
+    "parcel-bundler": "^1.12.4",
+    "rimraf": "^3.0.2",
+    "sass": "^1.32.7",
+    "stylelint": "^13.10.0",
+    "stylelint-config-strict-scss": "^0.5.0",
+    "typescript": "^4.1.5"
+  },
+  "dependencies": {
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1"
+  }
 }
