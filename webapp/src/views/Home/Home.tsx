@@ -1,5 +1,5 @@
 import { useQuery } from '@apollo/client';
-import React from 'react';
+import React, { useState } from 'react';
 import { PHOTOS_QUERY } from './photosQuery';
 import './styles.scss';
 
@@ -11,11 +11,23 @@ interface IPhoto {
 }
 
 const Home: React.FunctionComponent = () => {
+  const [inputText, setInputText] = useState('');
+  const [queryText, setQueryText] = useState('');
+
+  const handleInputChange = (event: React.FormEvent<HTMLInputElement>) => {
+    setInputText(event.currentTarget.value);
+  };
+
+  const handleQuerySubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setQueryText(inputText);
+  };
+
   const { loading, error, data } = useQuery(PHOTOS_QUERY, {
     variables: {
       options: {
         paginate: { page: 0, limit: DEFAULT_PAGE_SIZE },
-        search: { q: '' },
+        search: { q: queryText },
       },
     },
   });
@@ -28,9 +40,20 @@ const Home: React.FunctionComponent = () => {
   return (
     <>
       <h1>Photo Album</h1>
-      <fieldset>
-        <input autoFocus type="search" placeholder="Search keywords on title" />
-      </fieldset>
+      <form onSubmit={handleQuerySubmit}>
+        <fieldset>
+          <input
+            autoFocus
+            type="search"
+            onChange={handleInputChange}
+            placeholder="Search keywords on title"
+            value={inputText}
+          />
+          <button type="submit" disabled={inputText.length <= 0}>
+            Search
+          </button>
+        </fieldset>
+      </form>
       <table>
         <colgroup>
           <col className="idColumn" />

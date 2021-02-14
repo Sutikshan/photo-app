@@ -6,10 +6,16 @@ h1 {
 
 fieldset {
   border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   input {
     display: block;
-    margin: 1em auto;
-    width: 25em;
+    margin: 1em 0.5em;
+    width: 22em;
+  }
+  button {
+    height: 2em;
   }
 }
 
@@ -23,9 +29,13 @@ table img {
 table {
   border: 1px solid #ccc;
   border-collapse: collapse;
-  width: 95%;
+  width: auto;
   table-layout: fixed;
   margin: auto;
+}
+
+.idColumn {
+  width: 5%;
 }
 
 table th,
