@@ -1,0 +1,92 @@
+@import 'base';
+
+h1 {
+  text-align: center;
+}
+
+fieldset {
+  border: none;
+  input {
+    display: block;
+    margin: 1em auto;
+    width: 25em;
+  }
+}
+
+table img {
+  object-fit: contain;
+  height: 75px;
+  width: 75px;
+  border: 1px solid #222;
+}
+
+table {
+  border: 1px solid #ccc;
+  border-collapse: collapse;
+  width: 95%;
+  table-layout: fixed;
+  margin: auto;
+}
+
+table th,
+table td {
+  padding: 0.625em;
+  text-align: left;
+}
+
+table tr {
+  background-color: #f8f8f8;
+  border: 1px solid #ddd;
+  padding: 0.35em;
+}
+
+/* Zebra striping */
+tr:nth-of-type(odd) {
+  background: #eee;
+}
+
+@media screen and (max-width: 680px) {
+  table {
+    border: 0;
+    margin: 1em;
+    width: auto;
+  }
+  // hide the thead
+  //  (but not display: none;, for accessibility)
+  table thead {
+    border: none;
+    height: 1px;
+    width: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    position: absolute;
+  }
+
+  table tr {
+    border-bottom: 3px solid #ddd;
+    display: block;
+    margin-bottom: 0.625em;
+  }
+
+  table td {
+    border-bottom: 1px solid #ddd;
+    display: block;
+    font-size: 0.8em;
+    text-align: right;
+  }
+
+  table td::before {
+    /*
+    * aria-label has no advantage, it won't be read inside a table
+    content: attr(aria-label);
+    */
+    content: attr(data-label);
+    float: left;
+    font-weight: bold;
+  }
+
+  table td:last-child {
+    border-bottom: 0;
+  }
+}
