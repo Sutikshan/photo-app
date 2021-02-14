@@ -1,9 +1,10 @@
 import { useQuery } from '@apollo/client';
 import React, { useState } from 'react';
+import { PAGE_SIZE } from './constants';
+import PageNavigator from './PageNavigator/PageNavigator';
 import { PHOTOS_QUERY } from './photosQuery';
 import './styles.scss';
 
-const DEFAULT_PAGE_SIZE = 10;
 interface IPhoto {
   id: string;
   title: string;
@@ -13,6 +14,7 @@ interface IPhoto {
 const Home: React.FunctionComponent = () => {
   const [inputText, setInputText] = useState('');
   const [queryText, setQueryText] = useState('');
+  const [page, setPage] = useState(0);
 
   const handleInputChange = (event: React.FormEvent<HTMLInputElement>) => {
     setInputText(event.currentTarget.value);
@@ -20,13 +22,19 @@ const Home: React.FunctionComponent = () => {
 
   const handleQuerySubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setPage(0);
     setQueryText(inputText);
+    setInputText('');
+  };
+
+  const handlePageButtonClick = (pageNumber: number) => {
+    setPage(pageNumber);
   };
 
   const { loading, error, data } = useQuery(PHOTOS_QUERY, {
     variables: {
       options: {
-        paginate: { page: 0, limit: DEFAULT_PAGE_SIZE },
+        paginate: { page, limit: PAGE_SIZE },
         search: { q: queryText },
       },
     },
@@ -35,7 +43,10 @@ const Home: React.FunctionComponent = () => {
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error ${JSON.stringify(error, null, 2)}</p>;
 
-  const { data: photoList } = data.photos;
+  const {
+    data: photoList,
+    meta: { totalCount },
+  } = data.photos;
 
   return (
     <>
@@ -63,7 +74,7 @@ const Home: React.FunctionComponent = () => {
         <thead>
           <tr>
             <th>ID</th>
-            <th>Title</th>
+            <th>Title {queryText && `containing "${queryText}"`} </th>
             <th>Thumbnail</th>
           </tr>
         </thead>
@@ -79,6 +90,11 @@ const Home: React.FunctionComponent = () => {
           ))}
         </tbody>
       </table>
+      <PageNavigator
+        currentPage={page}
+        onPageButtonClick={handlePageButtonClick}
+        totalCount={totalCount}
+      />
     </>
   );
 };
