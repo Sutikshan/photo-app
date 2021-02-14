@@ -1,6 +1,7 @@
 import { useQuery } from '@apollo/client';
 import React, { useState } from 'react';
 import { PAGE_SIZE } from './constants';
+import ImageModal from './ImageModal/ImageModal';
 import PageNavigator from './PageNavigator/PageNavigator';
 import { PHOTOS_QUERY } from './photosQuery';
 import './styles.scss';
@@ -9,12 +10,29 @@ interface IPhoto {
   id: string;
   title: string;
   thumbnailUrl: string;
+  url: string;
 }
 
 const Home: React.FunctionComponent = () => {
   const [inputText, setInputText] = useState('');
   const [queryText, setQueryText] = useState('');
   const [page, setPage] = useState(0);
+
+  const [imageUrl, setImageUrl] = useState('');
+  const [imageTitle, setImageTitle] = useState('');
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setImageUrl('');
+  };
+
+  const handleZoomClick = (title: string, url: string) => {
+    setImageUrl(url);
+    setImageTitle(title);
+    setIsModalOpen(true);
+  };
 
   const handleInputChange = (event: React.FormEvent<HTMLInputElement>) => {
     setInputText(event.currentTarget.value);
@@ -81,10 +99,21 @@ const Home: React.FunctionComponent = () => {
         <tbody>
           {photoList.map((photo: IPhoto) => (
             <tr key={photo.id}>
-              <td data-label="ID">{photo.id}</td>
+              <td
+                className="clickable"
+                data-label="ID"
+                onClick={() => handleZoomClick(photo.title, photo.url)}
+              >
+                {photo.id}
+              </td>
               <td data-label="Title">{photo.title}</td>
               <td data-label="Thumbnail">
-                <img src={photo.thumbnailUrl} alt={`image ${photo.title}`} />
+                <img
+                  className="clickable"
+                  onClick={() => handleZoomClick(photo.title, photo.url)}
+                  src={photo.thumbnailUrl}
+                  alt={`image ${photo.title}`}
+                />
               </td>
             </tr>
           ))}
@@ -94,6 +123,12 @@ const Home: React.FunctionComponent = () => {
         currentPage={page}
         onPageButtonClick={handlePageButtonClick}
         totalCount={totalCount}
+      />
+      <ImageModal
+        imageUrl={imageUrl}
+        isOpen={isModalOpen}
+        onCloseModal={handleModalClose}
+        title={imageTitle}
       />
     </>
   );

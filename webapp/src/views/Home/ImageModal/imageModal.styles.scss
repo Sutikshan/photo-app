@@ -1,0 +1,23 @@
+@import '~bootstrap/scss/bootstrap';
+.modal-dialog {
+  width: 640px;
+  max-width: none;
+}
+
+img {
+  object-fit: contain;
+  height: 600px;
+  width: 600px;
+}
+
+@media screen and (max-width: 680px) {
+  .modal-dialog {
+    width: 340px;
+    max-width: none;
+  }
+  img {
+    object-fit: contain;
+    height: 300px;
+    width: 300px;
+  }
+}
