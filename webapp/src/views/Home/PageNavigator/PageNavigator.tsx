@@ -3,7 +3,7 @@ import React from 'react';
 import { PAGE_SIZE } from '../constants';
 import getButtonsCounter from './getButtonsCounter';
 import './pageNavigator.styles.scss';
-import { IPageNavigatorProps } from './types';
+import { IPageNavigatorProps } from './pageNavigator.types';
 
 const PageNavigator: React.FunctionComponent<IPageNavigatorProps> = ({
   currentPage,

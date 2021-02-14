@@ -1,7 +1,3 @@
-export interface ILink {
-  page: number;
-  limit: number;
-}
 export interface IPageButtonClick {
   (pageNumber: number): void;
 }

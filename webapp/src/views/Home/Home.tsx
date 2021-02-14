@@ -1,70 +1,83 @@
 import { useQuery } from '@apollo/client';
-import React, { useState } from 'react';
+import React, { useReducer } from 'react';
 import { PAGE_SIZE } from './constants';
-import ImageModal from './ImageModal/ImageModal';
-import PageNavigator from './PageNavigator/PageNavigator';
+import './home.styles.scss';
+import './home.types';
+import { IPhoto, IPhotoQueryResponse, IPhotoQueryVars } from './home.types';
+import ImageModal from './ImageModal';
+import {
+  INIT_ZOOM_MODAL_STATE,
+  ModalActionType,
+  zoomModalReducer,
+} from './imageModalReducer';
+import PageNavigator from './PageNavigator';
+import {
+  INIT_PHOTO_QUERY_STATE,
+  PhotoQueryActionType,
+  photoQueryReducer,
+} from './photoQueryReducer';
 import { PHOTOS_QUERY } from './photosQuery';
-import './styles.scss';
-
-interface IPhoto {
-  id: string;
-  title: string;
-  thumbnailUrl: string;
-  url: string;
-}
 
 const Home: React.FunctionComponent = () => {
-  const [inputText, setInputText] = useState('');
-  const [queryText, setQueryText] = useState('');
-  const [page, setPage] = useState(0);
-
-  const [imageUrl, setImageUrl] = useState('');
-  const [imageTitle, setImageTitle] = useState('');
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [queryState, queryUpdateDispatch] = useReducer(
+    photoQueryReducer,
+    INIT_PHOTO_QUERY_STATE
+  );
+  const [zoomModalState, zoomModalDispatch] = useReducer(
+    zoomModalReducer,
+    INIT_ZOOM_MODAL_STATE
+  );
 
   const handleModalClose = () => {
-    setIsModalOpen(false);
-    setImageUrl('');
+    zoomModalDispatch({ type: ModalActionType.OnModalClose });
   };
 
   const handleZoomClick = (title: string, url: string) => {
-    setImageUrl(url);
-    setImageTitle(title);
-    setIsModalOpen(true);
+    zoomModalDispatch({ type: ModalActionType.OnModalOpenRequest, title, url });
   };
 
   const handleInputChange = (event: React.FormEvent<HTMLInputElement>) => {
-    setInputText(event.currentTarget.value);
+    queryUpdateDispatch({
+      type: PhotoQueryActionType.OnInputChange,
+      value: event.currentTarget.value,
+    });
   };
 
   const handleQuerySubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setPage(0);
-    setQueryText(inputText);
-    setInputText('');
+    queryUpdateDispatch({ type: PhotoQueryActionType.OnSubmit });
   };
 
   const handlePageButtonClick = (pageNumber: number) => {
-    setPage(pageNumber);
+    queryUpdateDispatch({
+      type: PhotoQueryActionType.OnPageButtonClick,
+      pageNumber,
+    });
   };
 
-  const { loading, error, data } = useQuery(PHOTOS_QUERY, {
+  const { page, queryText: q } = queryState;
+
+  const { loading, error, data } = useQuery<
+    IPhotoQueryResponse,
+    IPhotoQueryVars
+  >(PHOTOS_QUERY, {
     variables: {
       options: {
         paginate: { page, limit: PAGE_SIZE },
-        search: { q: queryText },
+        search: { q },
       },
     },
   });
 
   if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error ${JSON.stringify(error, null, 2)}</p>;
+  if (error || !data || !data.photos)
+    return <p>Error ${JSON.stringify(error, null, 2)}</p>;
 
   const {
     data: photoList,
     meta: { totalCount },
   } = data.photos;
+  const { url: imageUrl, title, isModalOpen } = zoomModalState;
 
   return (
     <>
@@ -76,9 +89,9 @@ const Home: React.FunctionComponent = () => {
             type="search"
             onChange={handleInputChange}
             placeholder="Search keywords on title"
-            value={inputText}
+            value={queryState.inputText}
           />
-          <button type="submit" disabled={inputText.length <= 0}>
+          <button type="submit" disabled={queryState.inputText.length <= 0}>
             Search
           </button>
         </fieldset>
@@ -92,7 +105,7 @@ const Home: React.FunctionComponent = () => {
         <thead>
           <tr>
             <th>ID</th>
-            <th>Title {queryText && `containing "${queryText}"`} </th>
+            <th>Title {q && `containing "${q}"`} </th>
             <th>Thumbnail</th>
           </tr>
         </thead>
@@ -128,7 +141,7 @@ const Home: React.FunctionComponent = () => {
         imageUrl={imageUrl}
         isOpen={isModalOpen}
         onCloseModal={handleModalClose}
-        title={imageTitle}
+        title={title}
       />
     </>
   );
