@@ -5,11 +5,6 @@ import './home.styles.scss';
 import './home.types';
 import { IPhoto, IPhotoQueryResponse, IPhotoQueryVars } from './home.types';
 import ImageModal from './ImageModal';
-import {
-  INIT_ZOOM_MODAL_STATE,
-  ModalActionType,
-  zoomModalReducer,
-} from './imageModalReducer';
 import PageNavigator from './PageNavigator';
 import {
   INIT_PHOTO_QUERY_STATE,
@@ -17,6 +12,11 @@ import {
   photoQueryReducer,
 } from './photoQueryReducer';
 import { PHOTOS_QUERY } from './photosQuery';
+import {
+  INIT_ZOOM_MODAL_STATE,
+  ModalActionType,
+  zoomModalReducer,
+} from './zoomModalReducer';
 
 const Home: React.FunctionComponent = () => {
   const [queryState, queryUpdateDispatch] = useReducer(
